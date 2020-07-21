@@ -42,6 +42,38 @@ for i in nfl_years:
     df = df[1:]
     df.to_csv(f'data/nfl/NFL_{i}.csv')
 
+# NBA scraping 
+nba_years = list(range(1977, 2020))
+for i in nba_years:
+    url = f'https://www.basketball-reference.com/leagues/NBA_{i}_totals.html'
+
+    r = requests.get(url)
+
+    soup = BeautifulSoup(r.content, 'html.parser')
+    parsed_table = soup.find_all('table')[0]
+
+
+    rows= []
+    for tr in parsed_table.find_all('tr'):
+        cells = []
+        tds = tr.find_all('td')
+        if len(tds) == 0:
+            ths = tr.find_all('th')
+            for th in ths:
+                cells.append(th.text.strip())
+        else:
+            for td in tds:
+                cells.append(td.text.strip())
+        rows.append(cells)
+    del rows[0][0]
+
+    df = pd.DataFrame(rows)
+    df.columns = df.iloc[0]
+    df = df[1:]
+    df.to_csv(f'data/nba/NBA_{i}.csv')
+
+
+
 #reading in and cleaning up dataframes    
 
 df_2019 = pd.read_csv('data/nfl/NFL_2019.csv')

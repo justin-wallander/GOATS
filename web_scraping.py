@@ -137,7 +137,7 @@ for i in nfl_years:
             del nfl_i[col]
     master = master.append(nfl_i, ignore_index = True)
 
-master.to_csv('data/nfl/Master.csv')
+master.to_csv('data/nfl/Master_NFL.csv')
 print(master.shape)
 print(master.describe())
 print(master.info())
@@ -205,9 +205,19 @@ for i in nba_years:
     master = master.append(nba_i, ignore_index = True)
 
 master.to_csv('data/nba/Master_NBA.csv')
-print(master.shape)
-print(master.info())
-print(master.describe())
+
+master_nba = pd.read_csv('data/nba/Master_NBA.csv', index_col= "Unnamed: 0")
+print(master_nba.shape)
+print(master_nba.info())
+print(master_nba.describe())
+master_nfl = pd.read_csv('data/nfl/Master_NFL.csv', index_col= "Unnamed: 0")
+print(master_nfl.shape)
+print(master_nfl.info())
+print(master_nfl.describe())
+for col in master_nfl.columns: 
+    master_nfl[col] = master_nfl[col].fillna(0.0)
+
+master_nfl.to_csv('data/nfl/Master_NFL.csv')
 
 
 

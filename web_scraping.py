@@ -75,6 +75,8 @@ for i in nba_years:
 
 
 #reading in and cleaning up dataframes
+
+#NFL
 # 2019 was completed in setting this up, so we will range to 2018   
 nfl_years = list(range(1970, 2019))
 for i in nfl_years:
@@ -142,19 +144,72 @@ print(master.info())
 
 
 
+#NBA data cleaning and merging
+
+nba_years = list(range(1977, 2020))
+for i in nba_years:
+    nba_i = pd.read_csv(f'data/nba/NBA_{i}.csv')
+    nba_i = nba_i[nba_i.Age != 'Pos']
+    nba_i['Year'] = i
+    nba_i = nba_i.reset_index()
+    cols = ['Player', 'Pos', 'Age', 'Tm', 'G', 'GS', 'MP', 'FG',
+            'FGA', 'FG%', '3P', '3PA', '3P%', '2P', '2PA', '2P%', 'eFG%', 'FT',
+            'FTA', 'FT%', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PF',
+            'PTS', 'Year']
+    nba_i = nba_i[cols]
+    nba_i['Player'] = nba_i['Player'].apply(lambda x: x.replace('*', ''))
+
+    #issue where if a player was traded, he is in with both teams and then a total is inputted as well
+
+    multi_entries = nba_i['Player'].value_counts() > 1
+    multi_names = []
+    for idx, val in enumerate(multi_entries.index):
+        if multi_entries[idx]:
+            multi_names.append(val)
+
+    delete_idx = []
+    for idx, row in nba_i.iterrows():
+        for ele in multi_names:
+            if row['Player'] == ele and row['Tm'] != 'TOT':
+                delete_idx.append(idx)
+    nba_i = nba_i.drop(nba_i.index[delete_idx])
 
 
+    val_cols = ['Age', 'G', 'GS', 'MP', 'FG', 'FGA', 'FG%', '3P', '3PA', '3P%', '2P',
+                '2PA', '2P%', 'eFG%', 'FT', 'FTA', 'FT%', 'ORB', 'DRB', 'TRB', 'AST',
+                'STL', 'BLK', 'TOV', 'PF', 'PTS']
+
+    str_cols = ['Player', 'Pos', 'Tm']
+    for col in str_cols:
+        nba_i[col] = nba_i[col].fillna('?')
+
+    for col in val_cols:
+        nba_i[col] = nba_i[col].fillna(0)
+        nba_i[col] = nba_i[col].astype(float)
+
+    nba_i.to_csv(f'data/nba/NBA_{i}.csv')
 
 
+#merging to one master csv:
+master = pd.read_csv('data/nba/NBA_1977.csv')
+for col in master.columns:
+    if 'Unnamed' in col:
+        del master[col]
+nba_years = list(range(1978, 2020))
+for i in nba_years:
+
+    nba_i = pd.read_csv(f'data/nba/NBA_{i}.csv')
+    for col in nba_i.columns:
+        if 'Unnamed' in col:
+            del nba_i[col]
+    master = master.append(nba_i, ignore_index = True)
+
+master.to_csv('data/nba/Master_NBA.csv')
+print(master.shape)
+print(master.info())
+print(master.describe())
 
 
-
-
-
-
-
-nba_2019 = pd.read_csv('data/nba/NBA_2019.csv')
-print(nba_2019.head())
 
     
 

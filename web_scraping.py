@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import requests
 from bs4 import BeautifulSoup
 
-client = MongoClient('localhost', 27017)
+#client = MongoClient('localhost', 27017)
 
 
 

@@ -8,11 +8,11 @@ from bs4 import BeautifulSoup
 client = MongoClient('localhost', 27017)
 
 
-#NBA scraping -  totals going back to 1977 and then determine fantasy points from totals? or go based off PER
-#might just focus on football/basketball for now
 
 
-#NFL scraping- fantasy stats going back to 1970 and saving as CSV
+
+#NFL scraping- fantasy stats going back to 1970 and saving as CSV - 1970 because that is as far
+#back as the database went
 nfl_years = list(range(1970, 2020))
 for i in nfl_years:
     url = f'https://www.pro-football-reference.com/years/{i}/fantasy.htm'
@@ -42,7 +42,7 @@ for i in nfl_years:
     df = df[1:]
     df.to_csv(f'data/nfl/NFL_{i}.csv')
 
-# NBA scraping 
+#NBA scraping -  totals going back to 1977 (first year after merger)
 nba_years = list(range(1977, 2020))
 for i in nba_years:
     url = f'https://www.basketball-reference.com/leagues/NBA_{i}_totals.html'
